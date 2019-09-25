@@ -1,0 +1,36 @@
+For our great AIS frontend we need an epic backend. From the frontend we want to log into our system, log out and manage data about doctors.
+A basis already exists and will be developed further. It contains an executable server with connection to a MongoDB database.
+To make it a little easier for you, we have created 3 subtasks:
+Task part a) >> done
+This task is very important. Without it, it is not possible to manage the doctors for our new AIS.
+To exchange physician data between the client and the server we need an API with which man:
+1. write data records, >> done
+2. read a single record, >> done
+3. read all records, >> done
+4. delete one or more records, >> done
+A physician should be able to contain the following data:
+● Name
+● First name
+● Address
+● LANR (Lifetime Physician Number)
+To ensure that the data remains persistent, it should be stored in Mongo.
+Normally you would use REST for the simple operations here, but we know that the system will grow considerably and there are API requirements that cannot be solved with REST. So we need an RPC API.
+An example for the API is already implemented: Item 3 from this task part. The call to the server looks like this:
+
+{
+    "class": "doctor",
+    "method": "getAll"
+}
+The other parts are still missing. And here you come into play. 
+ 
+Task part b) >> done
+We want only logged in users to have access to the functions from task part a and therefore need functions for
+● Login
+● Logout
+You can also map this using the RPC-API.
+Task part c) >> done
+We want the entire application to be as scalable as possible and need a cool idea for that. Scalable means: It must be conceptually possible to send huge amounts of requests simultaneously to the server without receiving a DoS.
+A working prototype containing your DragonMedical with an explanation (if necessary) how it should work would be really great!
+
+If you start from scratch, it's a lot of work, so we want to make it easier for you: You can check it out the zip folder project and get started. You don't have to use anything in there, but you can use everything.
+Do you think something is solved unfavorably? Go ahead, change everything as you imagine it to be. 

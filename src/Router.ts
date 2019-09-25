@@ -1,6 +1,14 @@
 import {IncomingMessage, ServerResponse} from "http";
 
-import {getAll as getAllDoctor} from "./doctor";
+import {getAll as getAllDoctor,
+        getOne as getOneDoctor,
+        writeRecord as writeDoctorRecord,
+        deleteRecord as deleteDoctorRecord} from "./doctor";
+
+import {login as userLogin,
+        logout as userLogout,
+        isLogged as userIsLogged,
+        createUser as userCreate} from "./session";
 
 export class Router {
     private static _instance: Router = new Router();
@@ -39,12 +47,42 @@ export class Router {
                 response.end(JSON.stringify(resultError));
                 return;
             }
-
             Promise.resolve()
                 .then(() => {
                     if (postData.class === "doctor") {
-                        if (postData.method === "getAll") {
-                            return getAllDoctor();
+                        return userIsLogged(postData.JWT)
+                        .then((bool: boolean) => {
+                            if (!bool) {
+                                return Promise.reject(new Error("you are not an authorized user or your session as expired"));
+                            }
+                            switch (postData.method) {
+                                case "getAll":
+                                    return getAllDoctor();
+                                case "getOne":
+                                    if (postData.LANR && typeof postData.LANR === "string") {
+                                        return getOneDoctor(postData.LANR);
+                                    }
+                                    return Promise.reject(new Error("missing LANR number"));
+                                case "writeRecord":
+                                    if (Array.isArray(postData.record) && postData.record.length > 0) {
+                                        return writeDoctorRecord(postData.record);
+                                    }
+                                    break;
+                                case "deleteRecord":
+                                    if (Array.isArray(postData.LANR) && postData.LANR.length > 0) {
+                                        return deleteDoctorRecord(postData.LANR);
+                                    }
+                                    break;
+                              }
+                        }).then();
+                    } else if (postData.class === "session") {
+                        switch (postData.method) {
+                            case "login":
+                                return userLogin(postData.credential);
+                            case "logout":
+                                return userLogout(postData.JWT);
+                            case "createUser":
+                                return userCreate(postData.credential);
                         }
                     }
 
